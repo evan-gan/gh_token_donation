@@ -92,12 +92,15 @@ app.use(express.json());
 
 // Landing page
 app.get("/", (req, res) => {
+  const protocol = req.headers["x-forwarded-proto"] || req.protocol;
+  const host = req.headers["x-forwarded-host"] || req.get("host");
+  const redirectUri = `${protocol}://${host}/callback`;
   res.send(`<!DOCTYPE html>
 <html><head><title>Donate GitHub Token</title></head>
 <body style="font-family:system-ui;max-width:480px;margin:80px auto;text-align:center">
   <h1>Donate a GitHub Token</h1>
   <p>This authorizes read-only access to public info (commits, stars, etc). No private data is accessed.</p>
-  <a href="https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope="
+  <a href="https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope="
      style="display:inline-block;padding:12px 24px;background:#24292e;color:#fff;border-radius:6px;text-decoration:none">
     Sign in with GitHub
   </a>
